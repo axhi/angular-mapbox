@@ -7,7 +7,7 @@
         "Ariel Jakobovits"
     ],
     "description": "Easy Angular directives for Mapbox.js",
-    "main": "dist/angular-mapbox.min.js",
+    "main": "dist/angular-mapbox-v2.min.js",
     "keywords": [
         "mapbox",
         "angular",
