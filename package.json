@@ -1,6 +1,6 @@
 {
-    "name": "angular-mapbox",
-    "version": "0.1.5",
+    "name": "angular-mapbox-v2",
+    "version": "0.1.6",
     "main": "dist/angular-mapbox.min.js",
     "description": "Angular directives for easy Mapbox maps",
     "scripts":
@@ -10,7 +10,7 @@
     "repository":
     {
         "type": "git",
-        "url": "git://github.com/licyeus/angular-mapbox.git"
+        "url": "git://github.com/gigster-eng/angular-mapbox.git"
     },
     "keywords": [
         "angular",
@@ -21,7 +21,7 @@
     "license": "BSD-2-Clause",
     "bugs":
     {
-        "url": "https://github.com/licyeus/angular-mapbox/issues"
+        "url": "https://github.com/gigster-end/angular-mapbox/issues"
     },
     "devDependencies":
     {
