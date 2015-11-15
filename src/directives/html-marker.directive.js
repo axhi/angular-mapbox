@@ -2,7 +2,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('htmlMarker', function($compile, $timeout, mapboxService)
+    angular.module('angular-mapbox-v2').directive('htmlMarker', function($compile, $timeout, mapboxService)
     {
         var _colors = {
             navy: '#001f3f',

@@ -2,7 +2,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('featureLayer', function()
+    angular.module('angular-mapbox-v2').directive('featureLayer', function()
     {
         return {
             restrict: 'E',

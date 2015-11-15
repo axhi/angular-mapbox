@@ -1,15 +1,14 @@
 (function() {
   'use strict';
 
-  angular.module('angular-mapbox', []);
+  angular.module('angular-mapbox-v2', []);
 })();
-
 
 (function()
 {
     'use strict';
 
-    angular.module('angular-mapbox').service('mapboxService', [
+    angular.module('angular-mapbox-v2').service('mapboxService', [
         'utils',
 
         function(utils)
@@ -126,7 +125,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox')
+    angular.module('angular-mapbox-v2')
         .constant('utils',
         {
             debounce: function(func, wait, immediate)
@@ -164,7 +163,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('featureLayer', function()
+    angular.module('angular-mapbox-v2').directive('featureLayer', function()
     {
         return {
             restrict: 'E',
@@ -206,7 +205,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('htmlMarker', function($compile, $timeout, mapboxService)
+    angular.module('angular-mapbox-v2').directive('htmlMarker', function($compile, $timeout, mapboxService)
     {
         var _colors = {
             navy: '#001f3f',
@@ -379,7 +378,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
+    angular.module('angular-mapbox-v2').directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
         function($q, $parse, $timeout, mapboxService)
         {
             var _mapboxMap;
@@ -552,7 +551,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('marker', function($compile, $timeout, $parse, mapboxService)
+    angular.module('angular-mapbox-v2').directive('marker', function($compile, $timeout, $parse, mapboxService)
     {
         var _colors = {
             navy: '#001f3f',

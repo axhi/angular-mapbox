@@ -13,15 +13,15 @@
 
     gulp.task('scripts', function()
     {
-        return gulp.src(['src/angular-mapbox.module.js', 'src/**/*.js'])
-            .pipe(concat('angular-mapbox.js'))
+        return gulp.src(['src/angular-mapbox-v2.module.js', 'src/**/*.js'])
+            .pipe(concat('angular-mapbox-v2.js'))
             .pipe(gulp.dest('dist'));
     });
 
     gulp.task('build', function()
     {
-        return gulp.src(['src/angular-mapbox.module.js', 'src/**/*.js'])
-            .pipe(concat('angular-mapbox.min.js'))
+        return gulp.src(['src/angular-mapbox-v2.module.js', 'src/**/*.js'])
+            .pipe(concat('angular-mapbox-v2.min.js'))
             .pipe(ngmin())
             .pipe(uglify(
             {

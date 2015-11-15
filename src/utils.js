@@ -2,7 +2,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox')
+    angular.module('angular-mapbox-v2')
         .constant('utils',
         {
             debounce: function(func, wait, immediate)

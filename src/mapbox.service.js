@@ -2,7 +2,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').service('mapboxService', [
+    angular.module('angular-mapbox-v2').service('mapboxService', [
         'utils',
 
         function(utils)

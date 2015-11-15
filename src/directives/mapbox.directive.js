@@ -2,7 +2,7 @@
 {
     'use strict';
 
-    angular.module('angular-mapbox').directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
+    angular.module('angular-mapbox-v2').directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
         function($q, $parse, $timeout, mapboxService)
         {
             var _mapboxMap;
