@@ -10,7 +10,8 @@
             return {
                 restrict: 'E',
                 transclude: true,
-                scope: {
+                scope:
+                {
                     onReposition: '&?',
                     onZoom: '&?',
                     onClick: '&?'
@@ -49,15 +50,19 @@
                 },
                 link: function($scope, element, attrs)
                 {
-                    $scope.map = L.mapbox.map(element[0], attrs.mapId);
-                    $scope.markers = [];
-                    $scope.featureLayers = [];
+                    var mapConfig = {
+                        zoomControl: attrs.zoomControl ? attrs.zoomControl === 'true' : true
+                    };
 
                     var mapOptions = {
                         clusterMarkers: attrs.clusterMarkers !== undefined,
                         scaleToFit: attrs.scaleToFit !== undefined,
                         scaleToFitAll: attrs.scaleToFit === 'all'
                     };
+                    
+                    $scope.map = L.mapbox.map(element[0], attrs.mapId, mapConfig);
+                    $scope.markers = [];
+                    $scope.featureLayers = [];
 
                     mapboxService.addMapInstance($scope.map, mapOptions, $scope.markers);
                     _mapboxMap.resolve($scope.map);
@@ -109,7 +114,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onReposition({
+                                $scope.onReposition(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -123,7 +129,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onZoom({
+                                $scope.onZoom(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -137,7 +144,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onClick({
+                                $scope.onClick(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -149,10 +157,14 @@
                     {
                         var zoom = attrs.zoom || 12;
 
-                        if (!attrs.lat || !attrs.lng)
-                            return;
-
-                        $scope.map.setView([attrs.lat, attrs.lng], zoom);
+                        if (attrs.lat && attrs.lng)
+                        {
+                            $scope.map.setView([attrs.lat, attrs.lng], zoom);
+                        }
+                        else
+                        {
+                            $scope.map.setZoom(zoom);
+                        }
                     };
 
                     attrs.$observe('lat', refreshMap);

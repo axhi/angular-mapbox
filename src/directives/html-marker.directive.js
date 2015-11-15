@@ -55,7 +55,7 @@
                     if (transcludedContent !== null && transcludedContent.length > 0)
                     {
                         popupContentElement = document.createElement('span');
-                        
+
                         for (var i = 0; i < transcludedContent.length; i++)
                         {
                             popupContentElement.appendChild(transcludedContent[i]);
@@ -83,6 +83,14 @@
                         _marker = addMarker(scope, map, [attrs.lat, attrs.lng], popupContentElement, _opts, _style);
                     }
                 });
+
+                var refreshMarker = function()
+                {
+                    _marker.setLatLng([attrs.lat, attrs.lng]);
+                };
+
+                attrs.$observe('lat', refreshMarker);
+                attrs.$observe('lng', refreshMarker);
 
                 element.bind('$destroy', function()
                 {

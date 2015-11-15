@@ -258,7 +258,7 @@
                     if (transcludedContent !== null && transcludedContent.length > 0)
                     {
                         popupContentElement = document.createElement('span');
-                        
+
                         for (var i = 0; i < transcludedContent.length; i++)
                         {
                             popupContentElement.appendChild(transcludedContent[i]);
@@ -286,6 +286,14 @@
                         _marker = addMarker(scope, map, [attrs.lat, attrs.lng], popupContentElement, _opts, _style);
                     }
                 });
+
+                var refreshMarker = function()
+                {
+                    _marker.setLatLng([attrs.lat, attrs.lng]);
+                };
+
+                attrs.$observe('lat', refreshMarker);
+                attrs.$observe('lng', refreshMarker);
 
                 element.bind('$destroy', function()
                 {
@@ -386,7 +394,8 @@
             return {
                 restrict: 'E',
                 transclude: true,
-                scope: {
+                scope:
+                {
                     onReposition: '&?',
                     onZoom: '&?',
                     onClick: '&?'
@@ -485,7 +494,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onReposition({
+                                $scope.onReposition(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -499,7 +509,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onZoom({
+                                $scope.onZoom(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -513,7 +524,8 @@
                         {
                             $timeout(function()
                             {
-                                $scope.onClick({
+                                $scope.onClick(
+                                {
                                     event: event,
                                     map: $scope.map
                                 });
@@ -525,10 +537,14 @@
                     {
                         var zoom = attrs.zoom || 12;
 
-                        if (!attrs.lat || !attrs.lng)
-                            return;
-
-                        $scope.map.setView([attrs.lat, attrs.lng], zoom);
+                        if (attrs.lat && attrs.lng)
+                        {
+                            $scope.map.setView([attrs.lat, attrs.lng], zoom);
+                        }
+                        else
+                        {
+                            $scope.map.setZoom(zoom);
+                        }
                     };
 
                     attrs.$observe('lat', refreshMap);
@@ -659,10 +675,12 @@
         {
             var opts = defaultOpts ||
             {};
+
             if (attrs.size)
             {
                 opts['marker-size'] = attrs.size;
             }
+
             if (attrs.color)
             {
                 if (attrs.color[0] === '#')
@@ -674,10 +692,12 @@
                     opts['marker-color'] = _colors[attrs.color] || attrs.color;
                 }
             }
+
             if (attrs.icon)
             {
                 opts['marker-symbol'] = attrs.icon;
             }
+
             return opts;
         }
 
