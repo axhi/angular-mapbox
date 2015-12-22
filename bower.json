@@ -1,10 +1,11 @@
 {
-    "name": "angular-mapbox-v2",
+    "name": "angular-mapbox-earshot",
     "version": "0.1.6",
-    "homepage": "https://github.com/gigster-eng/angular-mapbox",
+    "homepage": "https://github.com/axhi/angular-mapbox",
     "authors": [
         "Andrew Sullivan",
-        "Ariel Jakobovits"
+        "Ariel Jakobovits",
+        "Joey Sabani"
     ],
     "description": "Easy Angular directives for Mapbox.js",
     "main": "dist/angular-mapbox-v2.min.js",
