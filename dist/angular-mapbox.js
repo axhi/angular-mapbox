@@ -427,9 +427,9 @@
       function getIcon (attrs) {
         if (attrs.iconUrl) {
           return L.icon({
-            iconUrl:attrs.iconUrl,
-            iconSize:attrs.iconSize,
-            iconAnchor: [25, 35]
+            iconUrl: attrs.iconUrl,
+            iconSize: attrs.iconSize.split(','),
+            iconAnchor: [20, 30]
           });
         }
       };
