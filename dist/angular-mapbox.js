@@ -78,6 +78,7 @@
       {
         var group = new L.featureGroup(getMarkersForMap(map));
         map.fitBounds(group.getBounds());
+        if (map.getZoom() > 15) map.setZoom(15);
       }, 0);
 
       function addMarker(map, marker)
@@ -101,7 +102,7 @@
         var markerIndexToRemove;
         var markers = getMarkersForMap(map);
         if (!markers) return;
-        for (var i = 0, markers; markers[i]; i++)
+        for (var i = 0; markers[i]; i++)
         {
           if (markers[i]._leaflet_id === marker._leaflet_id)
           {
@@ -128,7 +129,7 @@
         removeMarker: removeMarker,
         fitMapToMarkers: fitMapToMarkers,
         getOptionsForMap: getOptionsForMap,
-        getMapInstance: getMapInstance
+        getMapInstance: getMapInstance,
       };
     }
   ]);
@@ -212,187 +213,6 @@
         });
       }
     };
-  });
-})();
-
-(function()
-{
-  'use strict';
-
-  angular.module('angular-mapbox').directive('htmlMarker', function($compile, $timeout, mapboxService)
-  {
-    var _colors = {
-      navy: '#001f3f',
-      blue: '#0074d9',
-      aqua: '#7fdbff',
-      teal: '#39cccc',
-      olive: '#3d9970',
-      green: '#2ecc40',
-      lime: '#01ff70',
-      yellow: '#ffdc00',
-      orange: '#ff851b',
-      red: '#ff4136',
-      fuchsia: '#f012be',
-      purple: '#b10dc9',
-      maroon: '#85144b',
-      white: 'white',
-      silver: '#dddddd',
-      gray: '#aaaaaa',
-      black: '#111111'
-    };
-
-    return {
-      restrict: 'E',
-      require: '^mapbox',
-      transclude: true,
-      scope: true,
-      link: link
-    };
-
-    function link(scope, element, attrs, controller, transclude)
-    {
-      var _marker, _opts, _style;
-
-      _opts = {
-        draggable: attrs.draggable !== undefined,
-        className: attrs.className,
-        html: attrs.html,
-        width: attrs.width,
-        height: attrs.height
-      };
-
-      _style = setStyleOptions(attrs);
-
-      controller.getMap().then(function(map)
-      {
-        transclude(scope, function(transcludedContent)
-        {
-          var popupContentElement;
-
-          if (transcludedContent !== null && transcludedContent.length > 0)
-          {
-            popupContentElement = document.createElement('span');
-
-            for (var i = 0; i < transcludedContent.length; i++)
-            {
-              popupContentElement.appendChild(transcludedContent[i]);
-            }
-          }
-
-          if (attrs.currentLocation !== undefined)
-          {
-            _style = setStyleOptions(_style,
-              {
-                'marker-color': '#000',
-                'marker-symbol': 'star'
-              });
-            _opts.excludeFromClustering = true;
-
-            map.on('locationfound', function(e)
-            {
-              _marker = addMarker(scope, map, [e.latlng.lat, e.latlng.lng], popupContentElement, _opts, _style);
-            });
-
-            map.locate();
-          }
-          else
-          {
-            _marker = addMarker(scope, map, [attrs.lat, attrs.lng], popupContentElement, _opts, _style);
-          }
-        });
-
-        var refreshMarker = function()
-        {
-          _marker.setLatLng([attrs.lat, attrs.lng]);
-        };
-
-        attrs.$observe('lat', refreshMarker);
-        attrs.$observe('lng', refreshMarker);
-
-        element.bind('$destroy', function()
-        {
-          if (mapboxService.getOptionsForMap(map).clusterMarkers)
-          {
-            scope.clusterGroup.removeLayer(_marker);
-          }
-          else
-          {
-            mapboxService.removeMarker(map, _marker);
-          }
-        });
-      });
-    }
-
-    function setStyleOptions(attrs, defaultOpts)
-    {
-      var opts = defaultOpts ||
-      {};
-
-      if (attrs.size)
-      {
-        opts['marker-size'] = attrs.size;
-      }
-
-      if (attrs.color)
-      {
-        if (attrs.color[0] === '#')
-        {
-          opts['marker-color'] = attrs.color;
-        }
-        else
-        {
-          opts['marker-color'] = _colors[attrs.color] || attrs.color;
-        }
-      }
-
-      if (attrs.icon)
-      {
-        opts['marker-symbol'] = attrs.icon;
-      }
-
-      return opts;
-    }
-
-    function addMarker(scope, map, latlng, popupContent, opts)
-    {
-      opts = opts ||
-      {};
-
-      var marker = L.marker(latlng,
-        {
-          icon: L.divIcon(
-            {
-              className: opts.className,
-              html: opts.html,
-              iconSize: opts.width && opts.height ? [opts.width, opts.height] : null
-            })
-        });
-
-      if (popupContent)
-      {
-        marker.bindPopup(popupContent);
-      }
-
-      if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
-      {
-        scope.clusterGroup.addLayer(marker);
-      }
-      else
-      {
-        marker.addTo(map);
-      }
-
-      // this needs to come after being added to map because the L.mapbox.marker.style() factory
-      // does not let us pass other opts (eg, draggable) in
-      if (opts.draggable)
-      {
-        marker.dragging.enable();
-      }
-
-      mapboxService.addMarker(map, marker);
-
-      return marker;
-    }
   });
 })();
 
@@ -579,33 +399,17 @@
 {
   'use strict';
 
-  angular.module('angular-mapbox').directive('marker', function($compile, $timeout, $parse, mapboxService)
+  angular.module('angular-mapbox').directive('marker', function($compile, $timeout, mapboxService)
   {
-    var _colors = {
-      navy: '#001f3f',
-      blue: '#0074d9',
-      aqua: '#7fdbff',
-      teal: '#39cccc',
-      olive: '#3d9970',
-      green: '#2ecc40',
-      lime: '#01ff70',
-      yellow: '#ffdc00',
-      orange: '#ff851b',
-      red: '#ff4136',
-      fuchsia: '#f012be',
-      purple: '#b10dc9',
-      maroon: '#85144b',
-      white: 'white',
-      silver: '#dddddd',
-      gray: '#aaaaaa',
-      black: '#111111'
-    };
 
     return {
       restrict: 'E',
       require: '^mapbox',
       transclude: true,
-      scope: true,
+      scope: {
+        onClick: '&',
+        marker: '='
+      },
       link: link
     };
 
@@ -614,69 +418,37 @@
       var _marker, _opts, _style;
 
       _opts = {
-        draggable: attrs.draggable !== undefined
+        draggable: attrs.draggable !== undefined,
+        clickable: attrs.clickable !== undefined,
+        icon: getIcon(attrs)
       };
-      _style = setStyleOptions(attrs);
+      _style = setStyleOptions(attrs, _opts);
+
+      function getIcon (attrs) {
+        if (attrs.iconUrl) {
+          return L.icon({
+            iconUrl:attrs.iconUrl,
+            iconSize:attrs.iconSize,
+            iconAnchor: [25, 35]
+          });
+        }
+      };
 
       var map = mapboxService.getMapInstance(attrs.id);
-      transclude(scope, function(transcludedContent)
-      {
-        var popupContentElement;
-        if (transcludedContent !== null && transcludedContent.length > 0)
-        {
-          popupContentElement = document.createElement('span');
-          for (var i = 0; i < transcludedContent.length; i++)
-          {
-            popupContentElement.appendChild(transcludedContent[i]);
-          }
-        }
+      transclude(scope, function(transcludedContent) {
+        _marker = addMarker(scope, map, [attrs.lat, attrs.lng], _opts, _style);
 
-        if (attrs.currentLocation !== undefined)
-        {
-          _style = setStyleOptions(_style,
-            {
-              'marker-color': '#000',
-              'marker-symbol': 'star'
-            });
-          _opts.excludeFromClustering = true;
-
-          map.on('locationfound', function(e)
-          {
-            _marker = addMarker(scope, map, [e.latlng.lat, e.latlng.lng], popupContentElement, _opts, _style);
+        if (scope.onClick) {
+          _marker.on('click', function () {
+            scope.onClick({marker: scope.marker});
           });
-
-          map.locate();
-        }
-        else
-        {
-          _marker = addMarker(scope, map, [attrs.lat, attrs.lng], popupContentElement, _opts, _style);
-
-          if (attrs.onClick)
-          {
-            var clickFn = $parse(attrs.onClick, null, true);
-            _marker.on('click', function()
-            {
-              scope.$apply(function()
-              {
-                clickFn(scope,
-                  {
-                    $event: event
-                  });
-              });
-            });
-          }
         }
       });
 
-      element.bind('$destroy', function()
-      {
-
-        if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers)
-        {
+      element.bind('$destroy', function() {
+        if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers) {
           mapboxService.getOptionsForMap(map).clusterGroup.removeLayer(_marker);
-        }
-        else
-        {
+        } else {
           mapboxService.removeMarker(map, _marker);
         }
       });
@@ -684,44 +456,30 @@
 
     function setStyleOptions(attrs, defaultOpts)
     {
-      var opts = defaultOpts ||
-      {};
+      var opts = defaultOpts || {};
 
-      if (attrs.size)
-      {
-        opts['marker-size'] = attrs.size;
+      if (attrs.size) {
+        opts['marker-size'] = attrs.size || [25, 35];
       }
 
-      if (attrs.color)
-      {
-        if (attrs.color[0] === '#')
-        {
-          opts['marker-color'] = attrs.color;
-        }
-        else
-        {
-          opts['marker-color'] = _colors[attrs.color] || attrs.color;
-        }
-      }
-
-      if (attrs.icon)
-      {
+      if (attrs.icon) {
         opts['marker-symbol'] = attrs.icon;
+        delete opts['icon'];
+      }
+
+      if (attrs.color) {
+        opts['marker-color'] = attrs.color;
       }
 
       return opts;
     }
 
-    function addMarker(scope, map, latlng, popupContent, opts, style)
+    function addMarker(scope, map, latlng, opts, style)
     {
       opts = opts ||
       {};
 
       var marker = L.marker(latlng, opts);
-      if (popupContent)
-      {
-        marker.bindPopup(popupContent);
-      }
 
       if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
       {
@@ -735,6 +493,10 @@
       if (opts.draggable)
       {
         marker.dragging.enable();
+      }
+
+      if (opts.clickable) {
+        marker.options.clickable = false;
       }
 
       mapboxService.addMarker(map, marker);
