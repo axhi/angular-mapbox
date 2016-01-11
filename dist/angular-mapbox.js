@@ -291,6 +291,10 @@ angular.module('angular-mapbox', [])
             clickable: attrs.clickable !== undefined,
             icon: getIcon(attrs),
             bounceOnAdd: attrs.bounce !== undefined,
+            bounceOnAddOptions: {
+              duration: 300,
+              height: -3
+            }
           };
 
           function getIcon (attrs) {
@@ -314,13 +318,6 @@ angular.module('angular-mapbox', [])
             });
           }
 
-          if (mapboxService.getOptionsForMap(map).clusterMarkers && _opts.excludeFromClustering !== true)
-          {
-            mapboxService.getOptionsForMap(map).clusterGroup.addLayer(_marker);
-          } else {
-            _marker.addTo(map);
-          }
-
           element.bind('$destroy', function() {
             if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers) {
               mapboxService.getOptionsForMap(map).clusterGroup.removeLayer(_marker);
@@ -335,6 +332,14 @@ angular.module('angular-mapbox', [])
               {};
 
             var marker = L.marker(latlng, opts);
+
+            if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
+            {
+              mapboxService.getOptionsForMap(map).clusterGroup.addLayer(marker);
+            } else {
+              marker.addTo(map);
+            }
+
             if (opts.draggable)
             {
               marker.dragging.enable();
