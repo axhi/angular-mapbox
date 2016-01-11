@@ -1,132 +1,132 @@
 angular.module('angular-mapbox', [])
   .service('mapboxService', ['$timeout', function($timeout) {
-      var _mapInstances = [],
+    var _mapInstances = [],
       _mapOptions = [],
       _markers = [],
       _mapInstanceMapped = {};
 
-      function init(opts)
-      {
-        opts = opts ||
+    function init(opts)
+    {
+      opts = opts ||
         {};
-        L.mapbox.accessToken = opts.accessToken;
-      }
-
-      function addMapInstance(map, mapOptions, mapMarkers)
-      {
-        mapOptions = mapOptions || {};
-
-        this.mapInstances.push(map);
-        this.mapOptions.push(mapOptions);
-        this.markers.push(mapMarkers || []);
-        this.mapInstanceMapped[getMapId(map)] = map;
-      }
-
-      function getMapId(map) {
-        return map._container.id;
-      }
-
-      function removeMapInstance(map)
-      {
-        var mapIndex = this.mapInstances.indexOf(map);
-        delete this.mapInstanceMapped[getMapId(map)];
-
-        if (mapIndex >= 0)
-        {
-          this.mapInstances.splice(mapIndex, 1);
-          this.mapOptions.splice(mapIndex, 1);
-          this.markers.splice(mapIndex, 1);
-        }
-      }
-
-      function getMapInstances()
-      {
-        return this.mapInstances;
-      }
-
-      function getMapInstance(id) {
-        return this.mapInstanceMapped[id];
-      }
-
-      function _getMarkersForMap(map)
-      {
-        var mapIndex = this.mapInstances.indexOf(map);
-        return this.markers[mapIndex];
-      }
-
-      function getOptionsForMap(map)
-      {
-        var mapIndex = this.mapInstances.indexOf(map);
-        return this.mapOptions[mapIndex];
-      }
-
-      function fitMapToMarkers (map, markers)
-      {
-        $timeout(function() {
-          var group = new L.featureGroup(markers);
-          map.fitBounds(group.getBounds());
-          if (map.getZoom() > 15) map.setZoom(15);
-        }.bind(this), 100);
-      };
-
-      function addMarker(map, marker)
-      {
-        var mapIndex = this.mapInstances.indexOf(map);
-        var mapMarkers = this.markers[mapIndex];
-        var mapOptions = this.mapOptions[mapIndex];
-
-        mapMarkers.push(marker);
-
-        if (mapOptions.scaleToFit)
-        {
-          fitMapToMarkers(map, mapMarkers);
-        }
-      }
-
-      function removeMarker(map, marker)
-      {
-        map.removeLayer(marker);
-
-        var markerIndexToRemove;
-        var markers = this.getMarkersForMap(map);
-        if (!markers) return;
-        for (var i = 0; markers[i]; i++)
-        {
-          if (markers[i]._leaflet_id === marker._leaflet_id)
-          {
-            markerIndexToRemove = i;
-          }
-        }
-
-        markers.splice(markerIndexToRemove, 1);
-
-        var opts = getOptionsForMap(map);
-        if (opts.scaleToFit && opts.scaleToFitAll)
-        {
-          fitMapToMarkers(map, markers);
-        }
-      }
-
-      return {
-        init: init,
-        getMapInstances: getMapInstances,
-        addMapInstance: addMapInstance,
-        removeMapInstance: removeMapInstance,
-        getMarkersForMap: _getMarkersForMap,
-        addMarker: addMarker,
-        removeMarker: removeMarker,
-        fitMapToMarkers: fitMapToMarkers,
-        getOptionsForMap: getOptionsForMap,
-        getMapInstance: getMapInstance,
-        mapInstances: _mapInstances,
-        markers: _markers,
-        mapOptions: _mapOptions,
-        mapInstanceMapped: _mapInstanceMapped,
-      };
+      L.mapbox.accessToken = opts.accessToken;
     }
+
+    function addMapInstance(map, mapOptions, mapMarkers)
+    {
+      mapOptions = mapOptions || {};
+
+      this.mapInstances.push(map);
+      this.mapOptions.push(mapOptions);
+      this.markers.push(mapMarkers || []);
+      this.mapInstanceMapped[getMapId(map)] = map;
+    }
+
+    function getMapId(map) {
+      return map._container.id;
+    }
+
+    function removeMapInstance(map)
+    {
+      var mapIndex = this.mapInstances.indexOf(map);
+      delete this.mapInstanceMapped[getMapId(map)];
+
+      if (mapIndex >= 0)
+      {
+        this.mapInstances.splice(mapIndex, 1);
+        this.mapOptions.splice(mapIndex, 1);
+        this.markers.splice(mapIndex, 1);
+      }
+    }
+
+    function getMapInstances()
+    {
+      return this.mapInstances;
+    }
+
+    function getMapInstance(id) {
+      return this.mapInstanceMapped[id];
+    }
+
+    function _getMarkersForMap(map)
+    {
+      var mapIndex = this.mapInstances.indexOf(map);
+      return this.markers[mapIndex];
+    }
+
+    function getOptionsForMap(map)
+    {
+      var mapIndex = this.mapInstances.indexOf(map);
+      return this.mapOptions[mapIndex];
+    }
+
+    function fitMapToMarkers (map, markers)
+    {
+      $timeout(function() {
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds());
+        if (map.getZoom() > 15) map.setZoom(15);
+      }.bind(this), 100);
+    };
+
+    function addMarker(map, marker)
+    {
+      var mapIndex = this.mapInstances.indexOf(map);
+      var mapMarkers = this.markers[mapIndex];
+      var mapOptions = this.mapOptions[mapIndex];
+
+      mapMarkers.push(marker);
+
+      if (mapOptions.scaleToFit)
+      {
+        fitMapToMarkers(map, mapMarkers);
+      }
+    }
+
+    function removeMarker(map, marker)
+    {
+      map.removeLayer(marker);
+
+      var markerIndexToRemove;
+      var markers = this.getMarkersForMap(map);
+      if (!markers) return;
+      for (var i = 0; markers[i]; i++)
+      {
+        if (markers[i]._leaflet_id === marker._leaflet_id)
+        {
+          markerIndexToRemove = i;
+        }
+      }
+
+      markers.splice(markerIndexToRemove, 1);
+
+      var opts = getOptionsForMap(map);
+      if (opts.scaleToFit && opts.scaleToFitAll)
+      {
+        fitMapToMarkers(map, markers);
+      }
+    }
+
+    return {
+      init: init,
+      getMapInstances: getMapInstances,
+      addMapInstance: addMapInstance,
+      removeMapInstance: removeMapInstance,
+      getMarkersForMap: _getMarkersForMap,
+      addMarker: addMarker,
+      removeMarker: removeMarker,
+      fitMapToMarkers: fitMapToMarkers,
+      getOptionsForMap: getOptionsForMap,
+      getMapInstance: getMapInstance,
+      mapInstances: _mapInstances,
+      markers: _markers,
+      mapOptions: _mapOptions,
+      mapInstanceMapped: _mapInstanceMapped,
+    };
+  }
   ])
 
-.directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
+  .directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
     function($q, $parse, $timeout, mapboxService)
     {
       return {
@@ -157,7 +157,7 @@ angular.module('angular-mapbox', [])
           if (mapOptions['clusterMarkers'] !== undefined) {
             mapOptions.clusterGroup = new L.MarkerClusterGroup();
             $scope.map.addLayer(mapOptions.clusterGroup);
-          }
+          };
 
           mapboxService.addMapInstance($scope.map, mapOptions, $scope.markers);
 
@@ -276,100 +276,89 @@ angular.module('angular-mapbox', [])
     }
   ])
 
-.directive('marker', ['$compile', '$timeout', 'mapboxService',
-  function($compile, $timeout, mapboxService) {
-    return {
-      restrict: 'E',
-      scope: {
-        onClick: '&',
-        marker: '='
-      },
-      link: function(scope, element, attrs) {
-        var _marker, _opts, _style;
-        _opts = {
-          draggable: attrs.draggable !== undefined,
-          clickable: attrs.clickable !== undefined,
-          icon: getIcon(attrs)
-        };
-        _style = setStyleOptions(attrs, _opts);
+  .directive('marker', ['$compile', '$timeout', 'mapboxService',
+    function($compile, $timeout, mapboxService) {
+      return {
+        restrict: 'E',
+        scope: {
+          onClick: '&',
+          marker: '='
+        },
+        link: function(scope, element, attrs) {
+          var _marker, _opts;
+          _opts = {
+            draggable: attrs.draggable !== undefined,
+            clickable: attrs.clickable !== undefined,
+            icon: getIcon(attrs),
+            bounceOnAdd: true,
+            bounceOnAddOptions: {duration: 500, height: 100},
+            bounceOnAddCallback: function () {console.log('hi')}
+          };
 
-        function getIcon (attrs) {
-          if (attrs.iconUrl) {
-            return L.icon({
-              iconUrl: attrs.iconUrl,
-              iconSize: attrs.iconSize.split(','),
-              iconAnchor: [20, 30]
+          function getIcon (attrs) {
+            if (attrs.iconUrl) {
+              return L.icon({
+                iconUrl: attrs.iconUrl,
+                iconSize: attrs.iconSize.split(','),
+                iconAnchor: [20, 30]
+              });
+            } else if (attrs.className) {
+              return L.divIcon({
+                className: attrs.className,
+                iconSize: attrs.iconSize.split(',')
+              });
+            }
+          };
+
+          var map = mapboxService.getMapInstance(attrs.id);
+          console.log(_opts);
+          _marker = addMarker(scope, map, [attrs.lat, attrs.lng], _opts);
+
+          if (scope.onClick) {
+            _marker.on('click', function () {
+              scope.onClick({marker: scope.marker});
             });
           }
-        };
 
-        var map = mapboxService.getMapInstance(attrs.id);
-        _marker = addMarker(scope, map, [attrs.lat, attrs.lng], _opts, _style);
-
-        if (scope.onClick) {
-          _marker.on('click', function () {
-            scope.onClick({marker: scope.marker});
+          element.bind('$destroy', function() {
+            if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers) {
+              mapboxService.getOptionsForMap(map).clusterGroup.removeLayer(_marker);
+            } else {
+              mapboxService.removeMarker(map, _marker);
+            }
           });
+
+          function addMarker(scope, map, latlng, opts)
+          {
+            opts = opts ||
+              {};
+
+            var marker = L.marker(latlng, opts);
+
+            if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
+            {
+              mapboxService.getOptionsForMap(map).clusterGroup.addLayer(marker);
+            }
+            else if (opts['marker-color']) {
+            } else {
+              marker.addTo(map);
+            }
+
+            if (opts.draggable)
+            {
+              marker.dragging.enable();
+            }
+
+            if (opts.clickable) {
+              marker.options.clickable = false;
+            }
+
+            mapboxService.addMarker(map, marker);
+
+            return marker;
+          };
         }
-
-        element.bind('$destroy', function() {
-          if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers) {
-            mapboxService.getOptionsForMap(map).clusterGroup.removeLayer(_marker);
-          } else {
-            mapboxService.removeMarker(map, _marker);
-          }
-        });
-
-        function setStyleOptions(attrs, defaultOpts)
-        {
-          var opts = defaultOpts || {};
-
-          if (attrs.size) {
-            opts['marker-size'] = attrs.size || [25, 35];
-          }
-
-          if (attrs.icon) {
-            opts['marker-symbol'] = attrs.icon;
-            delete opts['icon'];
-          }
-
-          if (attrs.color) {
-            opts['marker-color'] = attrs.color;
-          }
-
-          return opts;
-        };
-
-        function addMarker(scope, map, latlng, opts, style)
-        {
-          opts = opts ||
-          {};
-
-          var marker = L.marker(latlng, opts);
-
-          if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
-          {
-            mapboxService.getOptionsForMap(map).clusterGroup.addLayer(marker);
-          }
-          else
-          {
-            marker.addTo(map);
-          }
-
-          if (opts.draggable)
-          {
-            marker.dragging.enable();
-          }
-
-          if (opts.clickable) {
-            marker.options.clickable = false;
-          }
-
-          mapboxService.addMarker(map, marker);
-
-          return marker;
-        };
       }
     }
-  }
   ]);
+
