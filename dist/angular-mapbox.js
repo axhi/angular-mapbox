@@ -66,7 +66,7 @@ angular.module('angular-mapbox', [])
         var group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds());
         if (map.getZoom() > 15) map.setZoom(15);
-      }.bind(this), 100);
+      }.bind(this), 200);
     };
 
     function addMarker(map, marker)
@@ -290,9 +290,7 @@ angular.module('angular-mapbox', [])
             draggable: attrs.draggable !== undefined,
             clickable: attrs.clickable !== undefined,
             icon: getIcon(attrs),
-            bounceOnAdd: true,
-            bounceOnAddOptions: {duration: 500, height: 100},
-            bounceOnAddCallback: function () {console.log('hi')}
+            bounceOnAdd: attrs.bounce !== undefined,
           };
 
           function getIcon (attrs) {
@@ -302,22 +300,25 @@ angular.module('angular-mapbox', [])
                 iconSize: attrs.iconSize.split(','),
                 iconAnchor: [20, 30]
               });
-            } else if (attrs.className) {
-              return L.divIcon({
-                className: attrs.className,
-                iconSize: attrs.iconSize.split(',')
-              });
+            } else {
+              return L.icon();
             }
           };
 
           var map = mapboxService.getMapInstance(attrs.id);
-          console.log(_opts);
           _marker = addMarker(scope, map, [attrs.lat, attrs.lng], _opts);
 
           if (scope.onClick) {
             _marker.on('click', function () {
               scope.onClick({marker: scope.marker});
             });
+          }
+
+          if (mapboxService.getOptionsForMap(map).clusterMarkers && _opts.excludeFromClustering !== true)
+          {
+            mapboxService.getOptionsForMap(map).clusterGroup.addLayer(_marker);
+          } else {
+            _marker.addTo(map);
           }
 
           element.bind('$destroy', function() {
@@ -334,16 +335,6 @@ angular.module('angular-mapbox', [])
               {};
 
             var marker = L.marker(latlng, opts);
-
-            if (mapboxService.getOptionsForMap(map).clusterMarkers && opts.excludeFromClustering !== true)
-            {
-              mapboxService.getOptionsForMap(map).clusterGroup.addLayer(marker);
-            }
-            else if (opts['marker-color']) {
-            } else {
-              marker.addTo(map);
-            }
-
             if (opts.draggable)
             {
               marker.dragging.enable();
@@ -354,11 +345,9 @@ angular.module('angular-mapbox', [])
             }
 
             mapboxService.addMarker(map, marker);
-
             return marker;
           };
         }
       }
     }
   ]);
-
