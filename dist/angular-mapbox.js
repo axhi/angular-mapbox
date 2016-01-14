@@ -1,67 +1,49 @@
 angular.module('angular-mapbox', [])
   .service('mapboxService', ['$timeout', function($timeout) {
-    var _mapInstances = [],
-      _mapOptions = [],
-      _markers = [],
-      _mapInstanceMapped = {};
+    var _mapInstances = {};
 
-    function init(opts)
-    {
+    function init(opts) {
       opts = opts ||
         {};
       L.mapbox.accessToken = opts.accessToken;
     }
 
-    function addMapInstance(map, mapOptions, mapMarkers)
+    function _addMapInstance(map, mapOptions, mapMarkers)
     {
       mapOptions = mapOptions || {};
 
-      this.mapInstances.push(map);
-      this.mapOptions.push(mapOptions);
-      this.markers.push(mapMarkers || []);
-      this.mapInstanceMapped[getMapId(map)] = map;
+      this.mapInstances[getMapId(map)] = {
+        map: map,
+        options: mapOptions,
+        markers: mapMarkers
+      }
     }
 
     function getMapId(map) {
       return map._container.id;
     }
 
-    function removeMapInstance(map)
-    {
-      var mapIndex = this.mapInstances.indexOf(map);
-      delete this.mapInstanceMapped[getMapId(map)];
-
-      if (mapIndex >= 0)
-      {
-        this.mapInstances.splice(mapIndex, 1);
-        this.mapOptions.splice(mapIndex, 1);
-        this.markers.splice(mapIndex, 1);
-      }
+    function _removeMapInstance(map) {
+      delete this.mapInstances[getMapId(map)]
     }
 
-    function getMapInstances()
-    {
+    function _getMapInstances() {
       return this.mapInstances;
     }
 
-    function getMapInstance(id) {
-      return this.mapInstanceMapped[id];
+    function _getMapInstance(id) {
+      return this.mapInstances[id].map;
     }
 
-    function _getMarkersForMap(map)
-    {
-      var mapIndex = this.mapInstances.indexOf(map);
-      return this.markers[mapIndex];
+    function _getMarkersForMap(map) {
+      return this.mapInstances[getMapId(map)].markers;
     }
 
-    function getOptionsForMap(map)
-    {
-      var mapIndex = this.mapInstances.indexOf(map);
-      return this.mapOptions[mapIndex];
+    function _getOptionsForMap(map) {
+      return this.mapInstances[getMapId(map)].options;
     }
 
-    function fitMapToMarkers (map, markers)
-    {
+    function _fitMapToMarkers (map, markers) {
       $timeout(function() {
         var group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds());
@@ -69,59 +51,70 @@ angular.module('angular-mapbox', [])
       }.bind(this), 200);
     };
 
-    function addMarker(map, marker)
-    {
-      var mapIndex = this.mapInstances.indexOf(map);
-      var mapMarkers = this.markers[mapIndex];
-      var mapOptions = this.mapOptions[mapIndex];
+    function _addMarker(map, marker) {
+      var mapInstance = this.mapInstances[getMapId(map)];
+      var mapMarkers = mapInstance.markers;
+      var mapOptions = mapInstance.options;
 
       mapMarkers.push(marker);
+      this.mapInstances[getMapId(map)].markers = mapMarkers;
 
       if (mapOptions.scaleToFit)
       {
-        fitMapToMarkers(map, mapMarkers);
+        this.fitMapToMarkers(map, mapMarkers);
       }
     }
 
-    function removeMarker(map, marker)
-    {
-      map.removeLayer(marker);
-
+    function _removeMarker(map, marker) {
       var markerIndexToRemove;
       var markers = this.getMarkersForMap(map);
       if (!markers) return;
-      for (var i = 0; markers[i]; i++)
-      {
-        if (markers[i]._leaflet_id === marker._leaflet_id)
-        {
+      var opts = this.getOptionsForMap(map);
+      var cG = opts.clusterGroup;
+
+      if (cG) {
+        cG.removeLayer(marker);
+        return;
+      };
+
+      map.removeLayer(marker);
+      for (var i = 0; markers[i]; i++) {
+        if (markers[i]._leaflet_id === marker._leaflet_id) {
           markerIndexToRemove = i;
         }
       }
 
       markers.splice(markerIndexToRemove, 1);
-
-      var opts = getOptionsForMap(map);
       if (opts.scaleToFit && opts.scaleToFitAll)
       {
-        fitMapToMarkers(map, markers);
+        this.fitMapToMarkers(map, markers);
       }
+      this.mapInstances[getMapId(map)].markers = markers;
+    }
+
+    function _removeMarkers(map) {
+      var mapInstance = this.mapInstances[getMapId(map)];
+      var cG = mapInstance.options.clusterGroup;
+
+      if (cG) {
+        map.removeLayer(cG);
+        this.mapInstances[getMapId(map)].options.clusterGroup = new L.MarkerClusterGroup({disableClusteringAtZoom: 18});
+        map.addLayer(this.mapInstances[getMapId(map)].options.clusterGroup);
+      };
     }
 
     return {
       init: init,
-      getMapInstances: getMapInstances,
-      addMapInstance: addMapInstance,
-      removeMapInstance: removeMapInstance,
+      getMapInstances: _getMapInstances,
+      addMapInstance: _addMapInstance,
+      removeMapInstance: _removeMapInstance,
       getMarkersForMap: _getMarkersForMap,
-      addMarker: addMarker,
-      removeMarker: removeMarker,
-      fitMapToMarkers: fitMapToMarkers,
-      getOptionsForMap: getOptionsForMap,
-      getMapInstance: getMapInstance,
+      addMarker: _addMarker,
+      removeMarker: _removeMarker,
+      fitMapToMarkers: _fitMapToMarkers,
+      getOptionsForMap: _getOptionsForMap,
+      getMapInstance: _getMapInstance,
       mapInstances: _mapInstances,
-      markers: _markers,
-      mapOptions: _mapOptions,
-      mapInstanceMapped: _mapInstanceMapped,
     };
   }
   ])
@@ -155,7 +148,16 @@ angular.module('angular-mapbox', [])
           };
 
           if (mapOptions['clusterMarkers'] !== undefined) {
-            mapOptions.clusterGroup = new L.MarkerClusterGroup();
+            mapOptions.clusterGroup = new L.MarkerClusterGroup({
+              disableClusteringAtZoom: 18,
+              removeOutsideVisibleBounds: true,
+              showCoverageOnHover: false,
+            });
+            $scope.map.featureLayer.on('ready', function (e) {
+              e.target.eachLayer(function(layer) {
+                mapOptions.clusterGroup.addLayer(layer);
+              });
+            });
             $scope.map.addLayer(mapOptions.clusterGroup);
           };
 
@@ -292,8 +294,8 @@ angular.module('angular-mapbox', [])
             icon: getIcon(attrs),
             bounceOnAdd: attrs.bounce !== undefined,
             bounceOnAddOptions: {
-              duration: 300,
-              height: -3
+              duration: 600,
+              height: -.5
             }
           };
 
@@ -319,7 +321,8 @@ angular.module('angular-mapbox', [])
           }
 
           element.bind('$destroy', function() {
-            if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers) {
+            if (mapboxService.getOptionsForMap(map) && mapboxService.getOptionsForMap(map).clusterMarkers)
+            {
               mapboxService.getOptionsForMap(map).clusterGroup.removeLayer(_marker);
             } else {
               mapboxService.removeMarker(map, _marker);
