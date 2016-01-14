@@ -36,10 +36,12 @@ angular.module('angular-mapbox', [])
     }
 
     function _getMarkersForMap(map) {
+      if (!this.mapInstances[getMapId(map)]) return;
       return this.mapInstances[getMapId(map)].markers;
     }
 
     function _getOptionsForMap(map) {
+      if (!this.mapInstances[getMapId(map)]) return;
       return this.mapInstances[getMapId(map)].options;
     }
 
