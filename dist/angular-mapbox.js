@@ -74,7 +74,7 @@ angular.module('angular-mapbox', [])
       var opts = this.getOptionsForMap(map);
       var cG = opts.clusterGroup;
 
-      if (cG) {
+      if (opts.clusterMarkers) {
         cG.removeLayer(marker);
         return;
       };
