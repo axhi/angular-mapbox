@@ -1,11 +1,32 @@
 angular.module('angular-mapbox', [])
-  .service('mapboxService', ['$timeout', function($timeout) {
+  .service('mapboxService', ['$timeout','$http', function($timeout, $http) {
     var _mapInstances = {};
+    var opts = {};
 
     function init(opts) {
-      opts = opts ||
-        {};
+      this.opts = opts || };
       L.mapbox.accessToken = opts.accessToken;
+    }
+
+    function _runQuery (endpoint, mapType, data, params, accessToken, callback) {
+      params = _.extend({access_token: accessToken}, params);
+      $http({
+        method: 'GET',
+        url: 'https://api.mapbox.com/' + endpoint + '/v5/'+ mapType +'/' + data + '.json',
+        params: params
+      }).then(function (success) {
+        callback(success);
+      }, function (error) {
+        callback(error);
+      });
+    }
+
+    function _geocode (data, callback) {
+      _runQuery('geocoding', 'mapbox.places', data, 'autocomplete=true', this.opts.accessToken,
+        function (data) {
+          callback(data.data);
+        }
+      );
     }
 
     function _addMapInstance(map, mapOptions, mapMarkers)
@@ -105,6 +126,18 @@ angular.module('angular-mapbox', [])
       };
     }
 
+    function _drawCircle (map, coordinates, radius) {
+      if (this.opts.layer)
+          map.removeLayer(this.opts.layer);
+      var circleLayer = L.circle(coordinates, radius);
+      this.opts.layer = circleLayer;
+      circleLayer.addTo(map);
+    }
+
+    function _setView (map, coordinates, zoom) {
+      map.setView(coordinates, zoom);
+    }
+
     return {
       init: init,
       getMapInstances: _getMapInstances,
@@ -117,6 +150,10 @@ angular.module('angular-mapbox', [])
       getOptionsForMap: _getOptionsForMap,
       getMapInstance: _getMapInstance,
       mapInstances: _mapInstances,
+      drawCircle: _drawCircle,
+      geocode: _geocode,
+      opts: opts,
+      setView: _setView
     };
   }
   ])
