@@ -4,7 +4,7 @@ angular.module('angular-mapbox', [])
     var opts = {};
 
     function init(opts) {
-      this.opts = opts || };
+      this.opts = opts || {};
       L.mapbox.accessToken = opts.accessToken;
     }
 
