@@ -127,11 +127,15 @@ angular.module('angular-mapbox', [])
     }
 
     function _drawCircle (map, coordinates, radius) {
-      if (this.opts.layer)
-          map.removeLayer(this.opts.layer);
+      this.clearCircles(map);
       var circleLayer = L.circle(coordinates, radius);
       this.opts.layer = circleLayer;
       circleLayer.addTo(map);
+    }
+
+    function _clearCircles (map) {
+      if (this.opts.layer)
+        map.removeLayer(this.opts.layer);
     }
 
     function _setView (map, coordinates, zoom) {
@@ -153,7 +157,8 @@ angular.module('angular-mapbox', [])
       drawCircle: _drawCircle,
       geocode: _geocode,
       opts: opts,
-      setView: _setView
+      setView: _setView,
+      clearCircles: _clearCircles
     };
   }
   ])
