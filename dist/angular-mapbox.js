@@ -37,7 +37,7 @@ angular.module('angular-mapbox', [])
         map: map,
         options: mapOptions,
         markers: mapMarkers
-      }
+      };
     }
 
     function getMapId(map) {
@@ -45,7 +45,7 @@ angular.module('angular-mapbox', [])
     }
 
     function _removeMapInstance(map) {
-      delete this.mapInstances[getMapId(map)]
+      delete this.mapInstances[getMapId(map)];
     }
 
     function _getMapInstances() {
@@ -72,7 +72,7 @@ angular.module('angular-mapbox', [])
         map.fitBounds(group.getBounds());
         if (map.getZoom() > 15) map.setZoom(15);
       }.bind(this), 200);
-    };
+    }
 
     function _addMarker(map, marker) {
       var mapInstance = this.mapInstances[getMapId(map)];
@@ -98,7 +98,7 @@ angular.module('angular-mapbox', [])
       if (opts.clusterMarkers) {
         cG.removeLayer(marker);
         return;
-      };
+      }
 
       map.removeLayer(marker);
       for (var i = 0; markers[i]; i++) {
@@ -113,17 +113,6 @@ angular.module('angular-mapbox', [])
         this.fitMapToMarkers(map, markers);
       }
       this.mapInstances[getMapId(map)].markers = markers;
-    }
-
-    function _removeMarkers(map) {
-      var mapInstance = this.mapInstances[getMapId(map)];
-      var cG = mapInstance.options.clusterGroup;
-
-      if (cG) {
-        map.removeLayer(cG);
-        this.mapInstances[getMapId(map)].options.clusterGroup = new L.MarkerClusterGroup({disableClusteringAtZoom: 18});
-        map.addLayer(this.mapInstances[getMapId(map)].options.clusterGroup);
-      };
     }
 
     function _drawCircle (map, coordinates, radius) {
@@ -163,8 +152,8 @@ angular.module('angular-mapbox', [])
   }
   ])
 
-  .directive('mapbox', ['$q', '$parse', '$timeout', 'mapboxService',
-    function($q, $parse, $timeout, mapboxService)
+  .directive('mapbox', ['$timeout', 'mapboxService',
+    function($timeout, mapboxService)
     {
       return {
         restrict: 'E',
@@ -195,7 +184,7 @@ angular.module('angular-mapbox', [])
             mapOptions.clusterGroup = new L.MarkerClusterGroup({
               disableClusteringAtZoom: 18,
               removeOutsideVisibleBounds: true,
-              showCoverageOnHover: false,
+              showCoverageOnHover: false
             });
             $scope.map.featureLayer.on('ready', function (e) {
               e.target.eachLayer(function(layer) {
@@ -203,7 +192,7 @@ angular.module('angular-mapbox', [])
               });
             });
             $scope.map.addLayer(mapOptions.clusterGroup);
-          };
+          }
 
           mapboxService.addMapInstance($scope.map, mapOptions, $scope.markers);
 
@@ -317,13 +306,13 @@ angular.module('angular-mapbox', [])
           });
 
           refreshMap();
-        },
+        }
       };
     }
   ])
 
-  .directive('marker', ['$compile', '$timeout', 'mapboxService',
-    function($compile, $timeout, mapboxService) {
+  .directive('marker', ['mapboxService',
+    function(mapboxService) {
       return {
         restrict: 'E',
         scope: {
@@ -339,7 +328,7 @@ angular.module('angular-mapbox', [])
             bounceOnAdd: attrs.bounce !== undefined,
             bounceOnAddOptions: {
               duration: 600,
-              height: -.5
+              height: -0.5
             }
           };
 
@@ -353,7 +342,7 @@ angular.module('angular-mapbox', [])
             } else {
               return L.icon();
             }
-          };
+          }
 
           var map = mapboxService.getMapInstance(attrs.id);
           _marker = addMarker(scope, map, [attrs.lat, attrs.lng], _opts);
@@ -398,8 +387,8 @@ angular.module('angular-mapbox', [])
 
             mapboxService.addMarker(map, marker);
             return marker;
-          };
+          }
         }
-      }
+      };
     }
   ]);

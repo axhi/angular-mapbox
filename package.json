@@ -1,0 +1,20 @@
+{
+  "name": "angular-mapbox-earshot",
+  "version": "0.2.9",
+  "homepage": "https://github.com/evzdrop/angular-mapbox",
+  "authors": [
+    "Andrew Sullivan",
+    "Ariel Jakobovits",
+    "Joey Sabani"
+  ],
+  "description": "Easy Angular directives for Mapbox.js",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.4",
+    "gulp-minify": "0.0.14",
+    "jshint": "^2.9.4",
+    "jshint-stylish": "^2.2.1"
+  },
+  "dependencies": {}
+}
