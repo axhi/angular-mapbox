@@ -1,7 +1,7 @@
 {
   "name": "angular-mapbox-earshot",
-  "version": "0.2.8",
-  "homepage": "https://github.com/axhi/angular-mapbox",
+  "version": "0.2.9",
+  "homepage": "https://github.com/evzdrop/angular-mapbox",
   "authors": [
     "Andrew Sullivan",
     "Ariel Jakobovits",
