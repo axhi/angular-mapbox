@@ -303,6 +303,7 @@ angular.module('angular-mapbox', [])
           element.bind('$destroy', function()
           {
             mapboxService.removeMapInstance($scope.map);
+            $scope.map.remove();
           });
 
           refreshMap();
